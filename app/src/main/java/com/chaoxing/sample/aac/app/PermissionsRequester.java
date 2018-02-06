@@ -1,7 +1,11 @@
 package com.chaoxing.sample.aac.app;
 
 import android.app.Activity;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 /**
@@ -45,5 +49,6 @@ public class PermissionsRequester {
     public boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         return false;
     }
+
 
 }
