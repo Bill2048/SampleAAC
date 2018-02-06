@@ -3,11 +3,16 @@ package com.chaoxing.sample.aac.app;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
+import com.chaoxing.sample.aac.permission.OkPermission;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by HUWEI on 2018/2/2.
  */
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements OkPermission.OnRequestPermissionsResultCallback {
 
     private PermissionsRequester mPermissionsRequester;
 
@@ -39,10 +44,22 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mPermissionsRequester != null && mPermissionsRequester.getRequestCode() == requestCode) {
-            if(!mPermissionsRequester.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+//        if (mPermissionsRequester != null && mPermissionsRequester.getRequestCode() == requestCode) {
+//            if(!mPermissionsRequester.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+//
+//            }
+//        }
+        OkPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults,);
+    }
 
-            }
-        }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, String... permissions) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, String... permissions) {
+
     }
 }
