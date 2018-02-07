@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by HUWEI on 2018/2/2.
  */
 
-public class BaseActivity extends AppCompatActivity implements OkPermission.OnRequestPermissionsResultCallback {
+public class BaseActivity extends AppCompatActivity implements OkPermission.PermissionCallback {
 
     private PermissionsRequester mPermissionsRequester;
 
@@ -49,7 +49,6 @@ public class BaseActivity extends AppCompatActivity implements OkPermission.OnRe
 //
 //            }
 //        }
-        OkPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults,);
     }
 
 

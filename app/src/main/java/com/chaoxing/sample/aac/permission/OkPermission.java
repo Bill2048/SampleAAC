@@ -11,9 +11,14 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.AppOpsManagerCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ServiceCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+
+import com.chaoxing.sample.aac.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +42,8 @@ public class OkPermission {
     private String mPositiveButtonText;
     private String mNegativeButtonText;
 
-    private OkPermission(Object host) {
-        if (host instanceof PermissionCallback) {
+    private OkPermission(@NonNull Object host) {
+        if (!(host instanceof PermissionCallback)) {
             throw new IllegalArgumentException("页面需要实现 PermissionCallback 接口");
         }
 
@@ -48,7 +53,7 @@ public class OkPermission {
         mNegativeButtonText = activity.getString(android.R.string.cancel);
     }
 
-    private static Activity getActivity(Object host) {
+    private static Activity getActivity(@NonNull Object host) {
         if (host instanceof Activity) {
             return (Activity) host;
         } else if (host instanceof Fragment) {
@@ -59,11 +64,11 @@ public class OkPermission {
         return null;
     }
 
-    public static OkPermission with(Activity activity) {
+    public static OkPermission with(@NonNull Activity activity) {
         return new OkPermission(activity);
     }
 
-    public static OkPermission with(Fragment fragment) {
+    public static OkPermission with(@NonNull Fragment fragment) {
         return new OkPermission(fragment);
     }
 
@@ -106,7 +111,7 @@ public class OkPermission {
         request(mHost, mRationale, mPositiveButtonText, mNegativeButtonText, mRequestCode, mPermissions);
     }
 
-    private static void request(final Object host, final String rationale, String positiveButtonText, String negativeButtonText, final int requestCode, final String... permissions) {
+    private static void request(@NonNull final Object host, final String rationale, String positiveButtonText, String negativeButtonText, final int requestCode, final String... permissions) {
         Activity activity = getActivity(host);
         if (activity == null) {
             return;
@@ -157,7 +162,7 @@ public class OkPermission {
         }
     }
 
-    private static void executePermissionsRequest(Object host, String[] permissions, int requestCode) {
+    private static void executePermissionsRequest(@NonNull Object host, @NonNull String[] permissions, @NonNull int requestCode) {
         if (host instanceof Activity) {
             ((Activity) host).requestPermissions(permissions, requestCode);
         } else if (host instanceof Fragment) {
@@ -167,7 +172,7 @@ public class OkPermission {
         }
     }
 
-    public static void onRequestPermissionsResult(PermissionCallback callback, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public static void onRequestPermissionsResult(@NonNull PermissionCallback callback, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         List<String> deniedPermissionList = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
@@ -182,56 +187,56 @@ public class OkPermission {
         }
     }
 
-    public static boolean checkDeniedPermissionsNeverAskAgain(final Object object, String rationale, String... deniedPerms) {
-        return checkDeniedPermissionsNeverAskAgain(object, rationale, android.R.string.ok, android.R.string.cancel, null, deniedPerms);
+    public static void openApplicationDetailsSettings(@NonNull Activity host, String rationale, DialogInterface.OnClickListener negativeButtonOnClickListener, final int requestCode) {
+        openApplicationDetailsSettings(host, rationale, host.getString(android.R.string.ok), host.getString(android.R.string.cancel), negativeButtonOnClickListener, requestCode);
     }
 
-
-    public static boolean checkDeniedPermissionsNeverAskAgain(final Object object, String rationale, @StringRes int positiveButton, @StringRes int negativeButton, @Nullable DialogInterface.OnClickListener negativeButtonOnClickListener, String... deniedPerms) {
-
+    public static void openApplicationDetailsSettings(@NonNull Fragment host, String rationale, DialogInterface.OnClickListener negativeButtonOnClickListener, final int requestCode) {
+        openApplicationDetailsSettings(host, rationale, host.getString(android.R.string.ok), host.getString(android.R.string.cancel), negativeButtonOnClickListener, requestCode);
     }
-// https://developer.android.com/guide/topics/security/permissions.html?hl=zh-cn
-    public static boolean checkDeniedPermissionsNeverAskAgain(final Object object, String rationale,  String positiveButtonText, String negativeButtonText, @Nullable DialogInterface.OnClickListener negativeButtonOnClickListener, String... deniedPerms) {
-        boolean shouldShowRationale;
-        for (String perm : deniedPerms) {
-            shouldShowRationale = PermissionUtils.shouldShowRequestPermissionRationale(object, perm);
 
-            if (!shouldShowRationale) {
-                final Activity activity = Utils.getActivity(object);
-                if (null == activity) {
-                    return true;
-                }
+    public static void openApplicationDetailsSettings(@NonNull Activity host, String rationale, String positiveButtonText, String negativeButtonText, DialogInterface.OnClickListener negativeButtonOnClickListener, final int requestCode) {
+        openSettings(host, rationale, positiveButtonText, negativeButtonText, negativeButtonOnClickListener, requestCode);
+    }
 
-                new AlertDialog.Builder(activity).setMessage(rationale)
-                        .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
-                                intent.setData(uri);
-                                startAppSettingsScreen(object, intent);
-                            }
-                        })
-                        .setNegativeButton(negativeButton, negativeButtonOnClickListener)
-                        .create()
-                        .show();
+    public static void openApplicationDetailsSettings(@NonNull Fragment host, String rationale, String positiveButtonText, String negativeButtonText, DialogInterface.OnClickListener negativeButtonOnClickListener, final int requestCode) {
+        openSettings(host, rationale, positiveButtonText, negativeButtonText, negativeButtonOnClickListener, requestCode);
+    }
 
-                return true;
-            }
+    private static void openSettings(@NonNull final Object host, String rationale, String positiveButtonText, String negativeButtonText, DialogInterface.OnClickListener negativeButtonOnClickListener, final int requestCode) {
+        final Activity activity = getActivity(host);
+        if (activity == null) {
+            return;
         }
 
-        return false;
+        new AlertDialog.Builder(activity).setMessage(rationale)
+                .setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(host, intent, requestCode);
+                    }
+                })
+                .setNegativeButton(negativeButtonText, negativeButtonOnClickListener)
+                .create()
+                .show();
     }
 
 
-    private static void startAppSettingsScreen(Object object, Intent intent) {
+    private static void startActivityForResult(@NonNull Object object, Intent intent, int requestCode) {
         if (object instanceof Activity) {
-            ((Activity) object).startActivityForResult(intent, SETTINGS_REQ_CODE);
+            ((Activity) object).startActivityForResult(intent, requestCode);
         } else if (object instanceof Fragment) {
-            ((Fragment) object).startActivityForResult(intent, SETTINGS_REQ_CODE);
+            ((Fragment) object).startActivityForResult(intent, requestCode);
         } else if (object instanceof android.app.Fragment) {
-            ((android.app.Fragment) object).startActivityForResult(intent, SETTINGS_REQ_CODE);
+            ((android.app.Fragment) object).startActivityForResult(intent, requestCode);
         }
+    }
+
+    public static boolean hasPermissions(@NonNull Context context, String... permissions) {
+        return PermissionUtils.findDeniedPermissions(context, permissions).isEmpty();
     }
 
 }
