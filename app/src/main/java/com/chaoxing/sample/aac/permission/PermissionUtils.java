@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.NonNull;
 import android.support.v4.app.AppOpsManagerCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -45,6 +45,10 @@ public class PermissionUtils {
         }
 
         return denyPermissions;
+    }
+
+    public static boolean hasPermissions(@NonNull Context context, String... permissions) {
+        return findDeniedPermissions(context, permissions).isEmpty();
     }
 
     public static boolean shouldShowRequestPermissionRationale(Fragment fragment, String permission) {

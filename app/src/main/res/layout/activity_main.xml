@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.chaoxing.sample.aac.MainActivity">
 
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="hello" />
+
     <Button
         android:id="@+id/btn_go"
         android:layout_width="wrap_content"

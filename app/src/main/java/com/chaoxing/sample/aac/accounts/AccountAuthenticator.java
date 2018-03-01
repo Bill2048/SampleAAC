@@ -1,13 +1,17 @@
 package com.chaoxing.sample.aac.accounts;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.chaoxing.sample.aac.APIService;
+import com.chaoxing.sample.aac.retrofit.Result;
+import com.chaoxing.sample.aac.retrofit.ResultConverter;
+import com.chaoxing.sample.aac.retrofit.RetrofitFactory;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Created by HUWEI on 2018/2/1.
@@ -37,23 +41,32 @@ public class AccountAuthenticator {
         mContext = context.getApplicationContext();
     }
 
-    public String confirmCredentials(Credential credential) {
+    public void confirmCredentials(final Credential credential) {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(APIService.DOMAIN_PASSPORT2_CHAOXING_COM) // 设置网络请求的Url地址
-//                .addConverterFactory(GsonConverterFactory.create()) // 设置数据解析器
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create()) // 支持RxJava平台
-                .build();
-        try {
-            APIService apiService = retrofit.create(APIService.class);
-            Call<ResponseBody> call = apiService.signInToPassport("huwei@chaoxing.com", "098909", 0, true);
+//        Call<ResponseBody> call = apiService.signInToPassport(credential.getAccount(), credential.getCode(), 0, true);
 
-            Response<ResponseBody> response = call.execute();
-            return response.body().string();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        RetrofitFactory.create(APIService.DOMAIN_PASSPORT2_CHAOXING_COM, new ResultConverter<Result<User>>() {
+            @Override
+            public Result<User> convert(ResponseBody value) {
+                return null;
+            }
+        }).create(APIService.class)
+                .signInToPassport()
+                .enqueue(new Callback<Result<User>>() {
+                    @Override
+                    public void onResponse(Call<Result<User>> call, Response<Result<User>> response) {
+                        try {
+                            Toast.makeText(mContext, response.raw().body().string(), Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result<User>> call, Throwable t) {
+                        Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
 }
