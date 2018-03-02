@@ -22,7 +22,7 @@ public class OkHttpFactory {
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.cookieJar(new PersistentCookieJar(new WebViewCookieHandler()));
-        OkHttpUtils.setTrustHttpClient(builder);
+        OkHttp.setTrustHttpClient(builder);
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
