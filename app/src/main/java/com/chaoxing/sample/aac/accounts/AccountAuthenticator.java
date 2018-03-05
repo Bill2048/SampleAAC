@@ -1,17 +1,16 @@
 package com.chaoxing.sample.aac.accounts;
 
 import android.content.Context;
-import android.widget.Toast;
 
-import com.chaoxing.sample.aac.APIService;
+import com.chaoxing.sample.aac.api.APIService;
 import com.chaoxing.sample.aac.retrofit.Result;
 import com.chaoxing.sample.aac.retrofit.ResultConverter;
 import com.chaoxing.sample.aac.retrofit.RetrofitFactory;
+import com.chaoxing.sample.aac.rxjava.SimpleObserver;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by HUWEI on 2018/2/1.
@@ -48,23 +47,21 @@ public class AccountAuthenticator {
         RetrofitFactory.create(APIService.DOMAIN_PASSPORT2_CHAOXING_COM, new ResultConverter<Result<User>>() {
             @Override
             public Result<User> convert(ResponseBody value) {
-                return null;
+                return new Result<>();
             }
         }).create(APIService.class)
                 .signInToPassport()
-                .enqueue(new Callback<Result<User>>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SimpleObserver<Result<User>>() {
                     @Override
-                    public void onResponse(Call<Result<User>> call, Response<Result<User>> response) {
-                        try {
-                            Toast.makeText(mContext, response.raw().body().string(), Toast.LENGTH_SHORT).show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    public void onNext(Result<User> userResult) {
+                        super.onNext(userResult);
                     }
 
                     @Override
-                    public void onFailure(Call<Result<User>> call, Throwable t) {
-                        Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onError(Throwable e) {
+                        super.onError(e);
                     }
                 });
     }

@@ -1,8 +1,9 @@
-package com.chaoxing.sample.aac;
+package com.chaoxing.sample.aac.api;
 
 import com.chaoxing.sample.aac.accounts.User;
 import com.chaoxing.sample.aac.retrofit.Result;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -25,6 +26,6 @@ public interface APIService {
 
     // https://pan-yz.chaoxing.com/api/token/uservalid
     @POST("api/token/uservalid")
-    Call<Result<User>> signInToPassport();
+    Observable<Result<User>> signInToPassport();
 
 }
