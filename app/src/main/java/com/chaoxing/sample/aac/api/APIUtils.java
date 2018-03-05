@@ -14,26 +14,10 @@ public class APIUtils {
     private static final String LOGIN_Key = "L(AfY@DE";
     private static final String VALI_TOKEN = "de2ffb63dea8a76f056756e174f68bad";
 
-    public static String getUrlParmStringWithoutParm() {
-        String baseParm = getUrlBaseParmStringWithoutParm();
-        return getAllUrlParmString(baseParm);
-    }
-
-    private static String getUrlBaseParmStringWithoutParm() {
-        StringBuilder stb = new StringBuilder();
-        stb.append("token=").append(TOKEN);
-        stb.append("&_time=").append(System.currentTimeMillis());
-        return stb.toString();
-    }
-
-    private static String getAllUrlParmString(String baseParm) {
-        return getAllUrlParmString(DESKey, baseParm);
-    }
-
-    private static String getAllUrlParmString(String key, String baseParm) {
-//        String inf_enc = Md5Util.strToMd5_32(baseParm + "&DESKey=" + key);
-        String inf_enc = md5(baseParm + "&DESKey=" + key);
-        return baseParm + "&inf_enc=" + inf_enc;
+    public static String getToken() {
+        StringBuilder tokenBuilder = new StringBuilder();
+        tokenBuilder.append("token=").append(TOKEN).append("&_time=").append(System.currentTimeMillis());
+        return new StringBuilder(tokenBuilder).append("&inf_enc=").append(md5(tokenBuilder.toString())).toString();
     }
 
     public static String md5(String str) {
