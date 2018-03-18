@@ -3,6 +3,7 @@ package com.chaoxing.sample.aac.retrofit;
 import com.chaoxing.sample.aac.okhttp.OkHttpFactory;
 import com.google.gson.Gson;
 
+import okhttp3.Interceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -13,26 +14,44 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitFactory {
 
+    private String baseUrl;
+    private Interceptor[] interceptors;
+    private ResultConverter<?> converter;
+    private Gson gson;
+
     private RetrofitFactory() {
     }
 
-    public static Retrofit create(String baseUrl) {
-        return create(baseUrl, null, null);
+    public static RetrofitFactory get() {
+        return new RetrofitFactory();
     }
 
-    public static Retrofit create(String baseUrl, ResultConverter<?> converter) {
-        return create(baseUrl, converter, null);
+    public RetrofitFactory setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
     }
 
-    public static Retrofit create(String baseUrl, Gson gson) {
-        return create(baseUrl, null, gson);
+    public RetrofitFactory setInterceptors(Interceptor... interceptors) {
+        this.interceptors = interceptors;
+        return this;
     }
 
-    private static Retrofit create(String baseUrl, ResultConverter<?> converter, Gson gson) {
+
+    public RetrofitFactory setConverter(ResultConverter<?> converter) {
+        this.converter = converter;
+        return this;
+    }
+
+    public RetrofitFactory setGson(Gson gson) {
+        this.gson = gson;
+        return this;
+    }
+
+    public Retrofit create() {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(OkHttpFactory.create());
+                .client(OkHttpFactory.get().setInterceptors(interceptors).create());
 
         if (converter != null) {
             builder.addConverterFactory(JsonConverterFactory.create(converter));
@@ -46,5 +65,6 @@ public class RetrofitFactory {
 
         return builder.build();
     }
+
 
 }

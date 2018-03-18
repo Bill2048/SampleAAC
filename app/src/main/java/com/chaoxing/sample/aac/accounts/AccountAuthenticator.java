@@ -3,6 +3,7 @@ package com.chaoxing.sample.aac.accounts;
 import android.content.Context;
 
 import com.chaoxing.sample.aac.api.APIService;
+import com.chaoxing.sample.aac.okhttp.TokenInterceptor;
 import com.chaoxing.sample.aac.retrofit.Result;
 import com.chaoxing.sample.aac.retrofit.ResultConverter;
 import com.chaoxing.sample.aac.retrofit.RetrofitFactory;
@@ -40,17 +41,25 @@ public class AccountAuthenticator {
         mContext = context.getApplicationContext();
     }
 
+    public void passportAuthentication() {
+
+    }
+
     public void confirmCredentials(final Credential credential) {
 
 //        Call<ResponseBody> call = apiService.signInToPassport(credential.getAccount(), credential.getCode(), 0, true);
 
-        RetrofitFactory.create(APIService.DOMAIN_PASSPORT2_CHAOXING_COM, new ResultConverter<Result<User>>() {
-            @Override
-            public Result<User> convert(ResponseBody value) {
-                return new Result<>();
-            }
-        }).create(APIService.class)
-                .signInToPassport()
+        RetrofitFactory.get()
+                .setBaseUrl(APIService.DOMAIN_PASSPORT2_CHAOXING_COM)
+                .setInterceptors(new TokenInterceptor())
+                .setConverter(new ResultConverter<Result<User>>() {
+                    @Override
+                    public Result<User> convert(ResponseBody value) {
+                        return new Result<>();
+                    }
+                }).create()
+                .create(APIService.class)
+                .passportAuthentication(credential.getAccount(), credential.getCode(), 1, true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleObserver<Result<User>>() {

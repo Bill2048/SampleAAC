@@ -9,15 +9,35 @@ import java.security.NoSuchAlgorithmException;
 
 public class APIUtils {
 
-    private static final String TOKEN = "4faa8662c59590c6f43ae9fe5b002b42";
-    private static final String DESKey = "Z(AfY@XS";
-    private static final String LOGIN_Key = "L(AfY@DE";
-    private static final String VALI_TOKEN = "de2ffb63dea8a76f056756e174f68bad";
+    public static final String TOKEN = "4faa8662c59590c6f43ae9fe5b002b42";
+    public static final String DESKey = "Z(AfY@XS";
+    public static final String LOGIN_Key = "L(AfY@DE";
+    public static final String VALI_TOKEN = "de2ffb63dea8a76f056756e174f68bad";
 
     public static String getToken() {
-        StringBuilder tokenBuilder = new StringBuilder();
-        tokenBuilder.append("token=").append(TOKEN).append("&_time=").append(System.currentTimeMillis());
-        return new StringBuilder(tokenBuilder).append("&inf_enc=").append(md5(tokenBuilder.toString())).toString();
+        long time = System.currentTimeMillis();
+
+        StringBuilder infBuilder = new StringBuilder();
+        infBuilder.append("token=").append(TOKEN)
+                .append("&_time=").append(1520307720294l)
+                .append("&DESKey=").append(DESKey);
+
+        return new StringBuilder().append("token=").append(TOKEN)
+                .append("&_time=").append(time)
+                .append("&inf_enc=").append(md5(infBuilder.toString())).toString();
+    }
+
+    public static String getToken2() {
+        long time = System.currentTimeMillis();
+
+        StringBuilder infBuilder = new StringBuilder();
+        infBuilder.append("token=").append(TOKEN)
+                .append("&_time=").append(1520307720294l)
+                .append("&DESKey=").append(DESKey);
+
+        return new StringBuilder().append(TOKEN)
+                .append("&_time=").append(time)
+                .append("&inf_enc=").append(md5(infBuilder.toString())).toString();
     }
 
     public static String md5(String str) {

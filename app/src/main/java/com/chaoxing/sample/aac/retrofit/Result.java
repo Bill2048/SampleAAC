@@ -50,7 +50,7 @@ public class Result<T> {
         return result;
     }
 
-    public boolean isSuccess() {
+    public boolean isSuccessful() {
         return status == STATUS_SUCCESS;
     }
 
