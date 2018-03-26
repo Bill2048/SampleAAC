@@ -15,6 +15,11 @@ public class Credential implements Parcelable {
     public Credential() {
     }
 
+    public Credential(String account, String code) {
+        this.account = account;
+        this.code = code;
+    }
+
     protected Credential(Parcel in) {
         account = in.readString();
         code = in.readString();

@@ -4,6 +4,7 @@ import com.chaoxing.sample.aac.okhttp.OkHttpFactory;
 import com.google.gson.Gson;
 
 import okhttp3.Interceptor;
+import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -47,10 +48,18 @@ public class RetrofitFactory {
         return this;
     }
 
-    public Retrofit create() {
+    public Retrofit createWithRxJava() {
+        return create(RxJava2CallAdapterFactory.create());
+    }
+
+    public Retrofit createWithLiveData() {
+        return create(LiveDataCallAdapterFactory.create());
+    }
+
+    public Retrofit create(CallAdapter.Factory factory) {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(factory)
                 .client(OkHttpFactory.get().setInterceptors(interceptors).create());
 
         if (converter != null) {

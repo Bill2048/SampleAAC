@@ -7,6 +7,8 @@ import android.webkit.CookieSyncManager;
 
 import com.chaoxing.sample.aac.okhttp.OkHttp;
 
+import timber.log.Timber;
+
 /**
  * Created by HUWEI on 2018/2/26.
  */
@@ -18,6 +20,9 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
         initCookieManager(this);
         OkHttp.initUserAgent(this);
     }

@@ -8,10 +8,7 @@ import android.support.annotation.NonNull;
 
 public class Result<T> {
 
-    public static final int STATUS_ERROR = 0;
-    public static final int STATUS_SUCCESS = 1;
-
-    private int status;
+    private Status status;
     private T data;
     private String message;
     private String raw;  // 原始数据
@@ -26,7 +23,7 @@ public class Result<T> {
 
     public static <T> Result<T> success(@NonNull T data, String message, String raw) {
         Result<T> result = new Result<>();
-        result.setStatus(STATUS_SUCCESS);
+        result.setStatus(Status.SUCCESS);
         result.setData(data);
         result.setMessage(message);
         result.setRaw(raw);
@@ -43,7 +40,7 @@ public class Result<T> {
 
     public static <T> Result<T> error(String message, String raw, T data) {
         Result<T> result = new Result<>();
-        result.setStatus(STATUS_ERROR);
+        result.setStatus(Status.ERROR);
         result.setData(data);
         result.setMessage(message);
         result.setRaw(raw);
@@ -51,14 +48,14 @@ public class Result<T> {
     }
 
     public boolean isSuccessful() {
-        return status == STATUS_SUCCESS;
+        return status == Status.SUCCESS;
     }
 
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

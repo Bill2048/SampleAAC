@@ -2,7 +2,7 @@ package com.chaoxing.sample.aac.accounts;
 
 import android.content.Context;
 
-import com.chaoxing.sample.aac.api.APIService;
+import com.chaoxing.sample.aac.api.ApiService;
 import com.chaoxing.sample.aac.okhttp.TokenInterceptor;
 import com.chaoxing.sample.aac.retrofit.Result;
 import com.chaoxing.sample.aac.retrofit.ResultConverter;
@@ -50,15 +50,15 @@ public class AccountAuthenticator {
 //        Call<ResponseBody> call = apiService.signInToPassport(credential.getAccount(), credential.getCode(), 0, true);
 
         RetrofitFactory.get()
-                .setBaseUrl(APIService.DOMAIN_PASSPORT2_CHAOXING_COM)
+                .setBaseUrl(ApiService.DOMAIN_PASSPORT2_CHAOXING_COM)
                 .setInterceptors(new TokenInterceptor())
                 .setConverter(new ResultConverter<Result<User>>() {
                     @Override
                     public Result<User> convert(ResponseBody value) {
                         return new Result<>();
                     }
-                }).create()
-                .create(APIService.class)
+                }).createWithRxJava()
+                .create(ApiService.class)
                 .passportAuthentication(credential.getAccount(), credential.getCode(), 1, true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -9,11 +9,12 @@ import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.chaoxing.sample.aac.api.APIService;
+import com.chaoxing.sample.aac.api.ApiService;
 import com.chaoxing.sample.aac.okhttp.TokenInterceptor;
 import com.chaoxing.sample.aac.retrofit.Result;
 import com.chaoxing.sample.aac.retrofit.ResultConverter;
 import com.chaoxing.sample.aac.retrofit.RetrofitFactory;
+import com.chaoxing.sample.aac.retrofit.Status;
 import com.google.gson.Gson;
 
 import io.reactivex.Flowable;
@@ -35,7 +36,7 @@ public class LoginViewModel extends ViewModel {
     @MainThread
     public LiveData<Result<PassportResult>> passport(Credential credential) {
         Flowable<Result<PassportResult>> observable = RetrofitFactory.get()
-                .setBaseUrl(APIService.DOMAIN_PASSPORT2_CHAOXING_COM)
+                .setBaseUrl(ApiService.DOMAIN_PASSPORT2_CHAOXING_COM)
                 .setInterceptors(new TokenInterceptor())
                 .setConverter(new ResultConverter<Result<PassportResult>>() {
                     @Override
@@ -46,11 +47,11 @@ public class LoginViewModel extends ViewModel {
                             PassportResult passportResult = new Gson().fromJson(raw, PassportResult.class);
                             if (passportResult != null) {
                                 if (passportResult.isStatus()) {
-                                    result.setStatus(Result.STATUS_SUCCESS);
+                                    result.setStatus(Status.SUCCESS);
                                     result.setData(passportResult);
                                     result.setMessage(passportResult.getMes());
                                 } else {
-                                    result.setStatus(Result.STATUS_ERROR);
+                                    result.setStatus(Status.ERROR);
                                     result.setMessage(passportResult.getMes());
                                 }
                             }
@@ -59,8 +60,8 @@ public class LoginViewModel extends ViewModel {
                         }
                         return result;
                     }
-                }).create()
-                .create(APIService.class).passport(credential.getAccount(), credential.getCode(), 1, true);
+                }).createWithRxJava()
+                .create(ApiService.class).passport(credential.getAccount(), credential.getCode(), 1, true);
 
         LiveData<Result<PassportResult>> products = LiveDataReactiveStreams.fromPublisher(observable);
 

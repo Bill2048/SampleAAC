@@ -80,4 +80,6 @@ dependencies {
     // ReactiveStreams support for LiveData
     implementation "android.arch.lifecycle:reactivestreams:1.1.0"
 
+    implementation 'com.jakewharton.timber:timber:4.6.1'
+
 }
